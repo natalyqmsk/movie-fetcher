@@ -4,5 +4,5 @@ namespace MovieFetcher.Services;
 
 public interface IMovieService
 {
-    Task<ResponseData> GetMoviesByTitle(string title);
+    Task<ResponseData> GetMoviesByTitle(RequestParameters requestParameters);
 }

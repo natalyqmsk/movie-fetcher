@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using MovieFetcher.Models;
 
 namespace MovieFetcher.Services;
@@ -14,22 +15,25 @@ public class MovieService : IMovieService
         _mapper = mapper;
     }
 
-    public async Task<ResponseData> GetMoviesByTitle(string title)
+    public async Task<ResponseData> GetMoviesByTitle(RequestParameters requestParameters)
     {
-        var response = await _httpService.CreateGetAsync<RapidResponse>(BuildUri(title));
+        var response = await _httpService.CreateGetAsync<RapidResponse>(BuildUri(requestParameters));
         return BuildResponse(response.results);
     }
 
-    private static UriBuilder BuildUri(string title)
+    private static UriBuilder BuildUri(RequestParameters requestParameters)
     {
-        var limit = "100";
+        var title = requestParameters.Title;
+        var limit = requestParameters.PageSize;
+        var paginationKey = requestParameters.Page;
+        var sort = requestParameters.Sort;
         return new()
         {
             Port = -1,
             Path = "title/v2/find",
             Host = "imdb8.p.rapidapi.com",
             Scheme = "https",
-            Query = $"title={title}&limit={limit}&paginationKey=0&sortArg=moviemeter%2Casc"
+            Query = $"title={title}&limit={limit}&paginationKey={paginationKey}&sortArg={sort}"
         };
     }
 

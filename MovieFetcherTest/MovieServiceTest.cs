@@ -32,7 +32,7 @@ public class MovieServiceTest
         _httpService.Setup(x =>
                 x.CreateGetAsync<RapidResponse>(It.IsAny<UriBuilder>()))
             .ReturnsAsync(RapidResponseMockData.RapidResponse);
-        var actual = await _movieService.GetMoviesByTitle("star wars");
+        var actual = await _movieService.GetMoviesByTitle(new RequestParameters());
         _httpService.Verify(x => x.CreateGetAsync<RapidResponse>(It.IsAny<UriBuilder>())
             , Times.Once);
 
@@ -46,7 +46,7 @@ public class MovieServiceTest
         _httpService.Setup(x =>
                 x.CreateGetAsync<RapidResponse>(It.IsAny<UriBuilder>()))
             .ReturnsAsync(empty);
-        var actual = await _movieService.GetMoviesByTitle("star wars");
+        var actual = await _movieService.GetMoviesByTitle(new RequestParameters());
         _httpService.Verify(x => x.CreateGetAsync<RapidResponse>(It.IsAny<UriBuilder>())
             , Times.Once);
 
