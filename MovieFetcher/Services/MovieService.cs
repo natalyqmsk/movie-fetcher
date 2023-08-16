@@ -1,3 +1,4 @@
+using AutoMapper;
 using MovieFetcher.Models;
 
 namespace MovieFetcher.Services;
@@ -5,10 +6,12 @@ namespace MovieFetcher.Services;
 public class MovieService : IMovieService
 {
     private readonly IHttpService _httpService;
+    private readonly IMapper _mapper;
 
-    public MovieService(IHttpService httpService)
+    public MovieService(IHttpService httpService, IMapper mapper)
     {
         _httpService = httpService;
+        _mapper = mapper;
     }
 
     public async Task<ResponseData> GetMoviesByTitle(string title)
@@ -30,16 +33,9 @@ public class MovieService : IMovieService
         };
     }
 
-    private static Movie BuildMovie(MovieFromResponse x) => new() { Title = x.title, Year = x.year };
-
-    private static Dictionary<int, int> GroupByYear(IEnumerable<Movie> movies) =>
-        movies.GroupBy(x => x.Year).ToDictionary(x => x.Key, x => x.Count());
-
-    private static ResponseData BuildResponse(IEnumerable<MovieFromResponse> movies)
+    private ResponseData BuildResponse(IEnumerable<MovieFromResponse> movies)
     {
-        var moviesByTitle = movies.Select(BuildMovie);
-        var byTitle = moviesByTitle.ToList();
-        return new()
-            { moviesByTitle = byTitle, amountOfMoviesByYear = GroupByYear(byTitle) };
+        var moviesByTitle = _mapper.Map<IEnumerable<Movie>>(movies);
+        return _mapper.Map<ResponseData>(moviesByTitle);
     }
 }
