@@ -15,10 +15,11 @@ namespace MovieFetcher.Controllers
             _movieService = movieService;
         }
 
-        [HttpGet("{title}", Name = "GetMovie")]
-        public async Task<ResponseData> GetMovie(string title)
+        [HttpGet("/title", Name = "GetMovieByTitle")]
+        public async Task<IActionResult> GetMovieByTitle([FromQuery] RequestParameters request)
         {
-            return await _movieService.GetMoviesByTitle(title);
+            var moviesByTitle = await _movieService.GetMoviesByTitle(request);
+            return !moviesByTitle.moviesByTitle.Any() ? NotFound() : Ok(moviesByTitle);
         }
     }
 }
