@@ -9,6 +9,9 @@ public class HttpService : IHttpService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<HttpService> _logger;
+    const int MaxRequestsPerSecond = 5;
+    const int OneSecond = 1;
+    const int MaxRetries = 3;
 
     public HttpService(IHttpClientFactory httpClientFactory, ILogger<HttpService> logger)
     {
@@ -38,7 +41,8 @@ public class HttpService : IHttpService
     private AsyncRetryPolicy GetRetryPolicy()
     {
         return Policy.Handle<HttpRequestException>()
-            .WaitAndRetryAsync(retryCount: 3, _ => TimeSpan.FromSeconds(1),
+            .WaitAndRetryAsync(retryCount: MaxRetries,
+                _ => { return TimeSpan.FromSeconds(OneSecond / MaxRequestsPerSecond); },
                 (exception, timeSpan, retryCount, context) =>
                 {
                     _logger.LogError(exception, $"Retry attempt {retryCount} failed");
